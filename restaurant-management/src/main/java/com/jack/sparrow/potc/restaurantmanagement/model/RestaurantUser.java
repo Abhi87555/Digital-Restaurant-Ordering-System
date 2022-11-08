@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.UniqueConstraint;
 
 @Entity(name = "RestaurantUser")
 public class RestaurantUser implements BusinessEntity{
