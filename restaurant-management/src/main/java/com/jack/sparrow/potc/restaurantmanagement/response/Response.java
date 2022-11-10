@@ -1,21 +1,32 @@
 package com.jack.sparrow.potc.restaurantmanagement.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jack.sparrow.potc.restaurantmanagement.exception.Error;
 import com.jack.sparrow.potc.restaurantmanagement.model.BusinessEntity;
 import com.jack.sparrow.potc.restaurantmanagement.model.Context;
 
-import java.util.List;
+public class Response<T> {
 
-public class Response<T extends BusinessEntity> {
+    @JsonProperty("apiExecutionStatus")
+    private String executionStatus;
 
     @JsonProperty("entity")
     private T entity;
 
-    @JsonProperty("errors")
-    private List<Error> errors;
+    @JsonProperty("error")
+    private Error error;
 
     @JsonProperty("context")
     private Context context;
+
+    public String getExecutionStatus() {
+        return executionStatus;
+    }
+
+    @JsonProperty("apiExecutionStatus")
+    public void setExecutionStatus(String executionStatus) {
+        this.executionStatus = executionStatus;
+    }
 
     public T getEntity() {
         return entity;
@@ -26,13 +37,13 @@ public class Response<T extends BusinessEntity> {
         this.entity = entity;
     }
 
-    public List<Error> getErrors() {
-        return errors;
+    public Error getError() {
+        return error;
     }
 
-    @JsonProperty("errors")
-    public void setErrors(List<Error> errors) {
-        this.errors = errors;
+    @JsonProperty("error")
+    public void setError(Error error) {
+        this.error = error;
     }
 
     public Context getContext() {

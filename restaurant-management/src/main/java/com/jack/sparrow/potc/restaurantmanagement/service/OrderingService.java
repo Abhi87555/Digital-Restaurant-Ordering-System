@@ -1,5 +1,7 @@
 package com.jack.sparrow.potc.restaurantmanagement.service;
 
+import com.jack.sparrow.potc.restaurantmanagement.exception.Error;
+import com.jack.sparrow.potc.restaurantmanagement.exception.RestaurantManagementException;
 import com.jack.sparrow.potc.restaurantmanagement.model.Cart;
 import com.jack.sparrow.potc.restaurantmanagement.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,7 @@ public class OrderingService {
     public void recordPayment(String userName, long paidAmount){
         long totalCartValue = getTotalCartValue(userName);
         if (totalCartValue > paidAmount){
-            throw new RuntimeException("paidAmount is less than total cost of the cart");
+            throw new RestaurantManagementException("paidAmount is less than total cost of the cart", new Error("paidAmount is less than total cost of the cart"));
         }else {
             System.out.println("payment Recorded Successfully");
             System.out.println("Returning extra amount : " + (paidAmount - totalCartValue));

@@ -1,5 +1,7 @@
 package com.jack.sparrow.potc.restaurantmanagement.service;
 
+import com.jack.sparrow.potc.restaurantmanagement.exception.Error;
+import com.jack.sparrow.potc.restaurantmanagement.exception.RestaurantManagementException;
 import com.jack.sparrow.potc.restaurantmanagement.model.Cart;
 import com.jack.sparrow.potc.restaurantmanagement.model.Cuisine;
 import com.jack.sparrow.potc.restaurantmanagement.repository.CuisineRepository;
@@ -42,7 +44,6 @@ public class CartService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(Cuisine::isIs_available)
-                .filter(cuisine -> !cart.getCuisines().contains(cuisine.getCuisineName()))
                 .filter(cuisine -> cart.getCuisines().add(cuisine.getCuisineName()))
                 .forEach(cuisine -> cart.setTotalCost(cart.getTotalCost() + cuisine.getCost()));
         cartMap.put(cart.getUserName(), cart);
@@ -50,7 +51,7 @@ public class CartService {
 
     public void deleteCuisine(Cart input){
         if (!cartMap.containsKey(input.getUserName())){
-            throw new RuntimeException("cart is not created for this user");
+            throw new RestaurantManagementException("cart is not created for this user", new Error("cart is not created for this user"));
         }
         Cart cart = cartMap.get(input.getUserName());
         input.getCuisines().stream()
