@@ -5,6 +5,7 @@ import com.jack.sparrow.potc.restaurantmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +23,9 @@ public class UserService {
         return repository.findById(userName).orElse(null);
     }
 
+    @Transactional()
     public void updateAccess(RestaurantUser user){
-        repository.updateAccessById(user.getUserName(), user.isAdmin());
+        repository.updateAccessById(user.isAdmin(), user.getUserName());
     }
 
     public List<RestaurantUser> getAllUsers(){

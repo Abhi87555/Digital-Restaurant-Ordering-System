@@ -5,6 +5,7 @@ import com.jack.sparrow.potc.restaurantmanagement.repository.CuisineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class MenuService {
         repository.save(cuisine);
     }
 
+    @Transactional
     public void updateAvailability(String cuisineName, boolean availability){
         repository.updateAvailabilityById(cuisineName, availability);
     }

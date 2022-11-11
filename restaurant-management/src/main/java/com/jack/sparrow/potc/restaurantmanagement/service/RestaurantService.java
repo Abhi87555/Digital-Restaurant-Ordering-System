@@ -36,7 +36,11 @@ public class RestaurantService {
         Validator.validateAddCuisineToMenuAndUpdateAvailability(request);
         Cuisine cuisine = request.getEntity();
         Context context = request.getContext();
-        if (userService.getUserById(context.getUsername()).isAdmin()) {
+        RestaurantUser userById = userService.getUserById(context.getUsername());
+        if (userById == null){
+            throw new RestaurantManagementException("user not found!!!", new Error("user not found!!!"));
+        }
+        if (userById.isAdmin()) {
             menuService.addCuisine(cuisine);
         } else {
             throw new RestaurantManagementException("user does not have admin access", new Error("user does not have admin access"));
@@ -47,7 +51,11 @@ public class RestaurantService {
         Validator.validateAddCuisineToMenuAndUpdateAvailability(request);
         Cuisine cuisine = request.getEntity();
         Context context = request.getContext();
-        if (userService.getUserById(context.getUsername()).isAdmin()) {
+        RestaurantUser userById = userService.getUserById(context.getUsername());
+        if (userById == null){
+            throw new RestaurantManagementException("user not found!!!", new Error("user not found!!!"));
+        }
+        if (userById.isAdmin()) {
             menuService.updateAvailability(cuisine.getCuisineName(), cuisine.isIs_available());
         } else {
             throw new RestaurantManagementException("user does not have admin access", new Error("user does not have admin access"));
@@ -62,10 +70,13 @@ public class RestaurantService {
         Validator.validateAddUser(request);
         RestaurantUser user = request.getEntity();
         Context context = request.getContext();
+        RestaurantUser userById = userService.getUserById(context.getUsername());
         if (userService.getAllUsers().isEmpty()) {
             user.setAdmin(true);
             userService.addUser(user);
-        } else if (userService.getUserById(context.getUsername()).isAdmin()) {
+        }else if(userById == null){
+            throw new RestaurantManagementException("user not found!!!", new Error("user not found!!!"));
+        } else if (userById.isAdmin()) {
             userService.addUser(user);
         } else {
             throw new RestaurantManagementException("user does not have admin access", new Error("user does not have admin access"));
@@ -77,7 +88,10 @@ public class RestaurantService {
         RestaurantUser user = request.getEntity();
         Context context = request.getContext();
         RestaurantUser userById = userService.getUserById(context.getUsername());
-        if (userById != null && userById.isAdmin()) {
+        if (userById == null){
+            throw new RestaurantManagementException("user not found!!!", new Error("user not found!!!"));
+        }
+        if (userById.isAdmin()) {
             userService.updateAccess(user);
         } else {
             throw new RestaurantManagementException("user does not have admin access", new Error("user does not have admin access"));
@@ -136,10 +150,13 @@ public class RestaurantService {
         Validator.validateContext(request);
         Context context = request.getContext();
         RestaurantUser userById = userService.getUserById(context.getUsername());
-        if (userById != null && userById.isAdmin()) {
+        if (userById == null){
+            throw new RestaurantManagementException("user not found!!!", new Error("user not found!!!"));
+        }
+        if (userById.isAdmin()) {
             return cartService.getAllCart();
         } else {
-            throw new RestaurantManagementException("user not found!!!", new Error("user not found!!!"));
+            throw new RestaurantManagementException("user does not have admin access", new Error("user does not have admin access"));
         }
     }
 

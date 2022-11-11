@@ -3,7 +3,6 @@ package com.jack.sparrow.potc.restaurantmanagement.validation;
 import com.jack.sparrow.potc.restaurantmanagement.exception.Error;
 import com.jack.sparrow.potc.restaurantmanagement.exception.RestaurantManagementException;
 import com.jack.sparrow.potc.restaurantmanagement.model.Cart;
-import com.jack.sparrow.potc.restaurantmanagement.model.Context;
 import com.jack.sparrow.potc.restaurantmanagement.model.Cuisine;
 import com.jack.sparrow.potc.restaurantmanagement.model.RestaurantUser;
 import com.jack.sparrow.potc.restaurantmanagement.request.Request;
