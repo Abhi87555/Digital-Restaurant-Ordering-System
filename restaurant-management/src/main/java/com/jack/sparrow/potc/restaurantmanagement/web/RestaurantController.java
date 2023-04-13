@@ -1,6 +1,5 @@
 package com.jack.sparrow.potc.restaurantmanagement.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jack.sparrow.potc.restaurantmanagement.exception.Error;
 import com.jack.sparrow.potc.restaurantmanagement.exception.RestaurantManagementException;
 import com.jack.sparrow.potc.restaurantmanagement.model.Cart;
@@ -9,8 +8,9 @@ import com.jack.sparrow.potc.restaurantmanagement.model.Cuisine;
 import com.jack.sparrow.potc.restaurantmanagement.model.RestaurantUser;
 import com.jack.sparrow.potc.restaurantmanagement.request.Request;
 import com.jack.sparrow.potc.restaurantmanagement.response.Response;
-import com.jack.sparrow.potc.restaurantmanagement.service.*;
-import com.jack.sparrow.potc.restaurantmanagement.validation.Validator;
+import com.jack.sparrow.potc.restaurantmanagement.service.RestaurantService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +25,7 @@ public class RestaurantController {
     @Autowired
     private RestaurantService service;
 
+    @Tag(name = "Menu-API")
     @RequestMapping(value = "/addCuisine", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<String> addCuisineToMenu(@RequestBody Request<Cuisine> request) {
@@ -43,6 +44,7 @@ public class RestaurantController {
         return response;
     }
 
+    @Tag(name = "Menu-API")
     @RequestMapping(value = "/updateAvailability", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<String> updateAvailability(@RequestBody Request<Cuisine> request) {
@@ -61,8 +63,8 @@ public class RestaurantController {
         return response;
     }
 
-    @RequestMapping(value = "/getAllCuisine", method = RequestMethod.POST, produces = "application/json"
-            , consumes = "application/json")
+    @Tag(name = "Menu-API")
+    @RequestMapping(value = "/getAllCuisine", method = RequestMethod.GET, produces = "application/json")
     public Response<List<Cuisine>> getAllCuisinesFromMenu() {
         Response<List<Cuisine>> response = new Response<>();
         try{
@@ -78,6 +80,7 @@ public class RestaurantController {
         return response;
     }
 
+    @Tag(name = "User-API")
     @RequestMapping(value = "/addUser", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<String> addUser(@RequestBody Request<RestaurantUser> request) {
@@ -96,6 +99,7 @@ public class RestaurantController {
         return response;
     }
 
+    @Tag(name = "User-API")
     @RequestMapping(value = "/updateUserAccess", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<String> updateUserAccess(@RequestBody Request<RestaurantUser> request) {
@@ -114,8 +118,8 @@ public class RestaurantController {
         return response;
     }
 
-    @RequestMapping(value = "/getAllUsers", method = RequestMethod.POST, produces = "application/json"
-            , consumes = "application/json")
+    @Tag(name = "User-API")
+    @RequestMapping(value = "/getAllUsers", method = RequestMethod.GET, produces = "application/json")
     public Response<List<RestaurantUser>> getAllUsers() {
         Response<List<RestaurantUser>> response = new Response<>();
         try{
@@ -131,6 +135,7 @@ public class RestaurantController {
         return response;
     }
 
+    @Tag(name = "Cart-API")
     @RequestMapping(value = "/createCart", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<String> createCart(@RequestBody Request<Cart> request) {
@@ -149,6 +154,7 @@ public class RestaurantController {
         return response;
     }
 
+    @Tag(name = "Cart-API")
     @RequestMapping(value = "/addCuisines", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<String> addCuisines(@RequestBody Request<Cart> request) {
@@ -167,6 +173,7 @@ public class RestaurantController {
         return response;
     }
 
+    @Tag(name = "Cart-API")
     @RequestMapping(value = "/deleteCuisine", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<String> deleteCuisine(@RequestBody Request<Cart> request) {
@@ -185,6 +192,7 @@ public class RestaurantController {
         return response;
     }
 
+    @Tag(name = "Cart-API")
     @RequestMapping(value = "/getCart", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<Cart> getCartByUserName(@RequestBody Request<Cart> request) {
@@ -202,6 +210,7 @@ public class RestaurantController {
         return response;
     }
 
+    @Tag(name = "Cart-API")
     @RequestMapping(value = "/getAllCart", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<List<Cart>> getAllCarts(@RequestBody Request<Cart> request) {
@@ -219,6 +228,7 @@ public class RestaurantController {
         return response;
     }
 
+    @Tag(name = "Order-API")
     @RequestMapping(value = "/getCartValue", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<Long> getCartValue(@RequestBody Request<Cart> request) {
@@ -236,6 +246,7 @@ public class RestaurantController {
         return response;
     }
 
+    @Tag(name = "Order-API")
     @RequestMapping(value = "/placeOrder", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response<String> placeOrder(@RequestBody Request<Cart> request) {
