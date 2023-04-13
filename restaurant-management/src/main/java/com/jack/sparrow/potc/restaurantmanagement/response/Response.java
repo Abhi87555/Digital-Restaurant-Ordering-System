@@ -1,10 +1,11 @@
 package com.jack.sparrow.potc.restaurantmanagement.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jack.sparrow.potc.restaurantmanagement.exception.Error;
-import com.jack.sparrow.potc.restaurantmanagement.model.BusinessEntity;
 import com.jack.sparrow.potc.restaurantmanagement.model.Context;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response<T> {
 
     @JsonProperty("apiExecutionStatus")

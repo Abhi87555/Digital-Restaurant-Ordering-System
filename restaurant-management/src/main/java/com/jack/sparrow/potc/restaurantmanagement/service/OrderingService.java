@@ -33,7 +33,7 @@ public class OrderingService {
         return cartMap.get(userName).getTotalCost();
     }
 
-    public void recordPayment(String userName, long paidAmount){
+    private void recordPayment(String userName, long paidAmount){
         long totalCartValue = getTotalCartValue(userName);
         if (totalCartValue > paidAmount){
             throw new RestaurantManagementException("paidAmount is less than total cost of the cart", new Error("paidAmount is less than total cost of the cart"));

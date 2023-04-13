@@ -75,7 +75,7 @@ public class RestaurantService {
             user.setAdmin(true);
             userService.addUser(user);
         }else if(userById == null){
-            throw new RestaurantManagementException("user not found!!!", new Error("user not found!!!"));
+            throw new RestaurantManagementException("admin not found!!!", new Error("admin not found"));
         } else if (userById.isAdmin()) {
             userService.addUser(user);
         } else {
@@ -89,10 +89,12 @@ public class RestaurantService {
         Context context = request.getContext();
         RestaurantUser userById = userService.getUserById(context.getUsername());
         if (userById == null){
-            throw new RestaurantManagementException("user not found!!!", new Error("user not found!!!"));
+            throw new RestaurantManagementException("admin not found!!!", new Error("admin not found"));
         }
         if (userById.isAdmin()) {
-            userService.updateAccess(user);
+            if (userService.updateAccess(user) == 0) {
+                throw new RestaurantManagementException("User not found", new Error("User not found"));
+            }
         } else {
             throw new RestaurantManagementException("user does not have admin access", new Error("user does not have admin access"));
         }
@@ -151,7 +153,7 @@ public class RestaurantService {
         Context context = request.getContext();
         RestaurantUser userById = userService.getUserById(context.getUsername());
         if (userById == null){
-            throw new RestaurantManagementException("user not found!!!", new Error("user not found!!!"));
+            throw new RestaurantManagementException("admin not found!!!", new Error("admin not found"));
         }
         if (userById.isAdmin()) {
             return cartService.getAllCart();

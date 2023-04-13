@@ -13,5 +13,5 @@ public interface UserRepository extends CrudRepository<RestaurantUser, String> {
 
     @Modifying
     @Query("update RestaurantUser u set u.isAdmin =:isAdmin where u.userName =:userName")
-    void updateAccessById(@Param("isAdmin") boolean isAdmin, @Param("userName") String userName);
+    int updateAccessById(@Param("isAdmin") boolean isAdmin, @Param("userName") String userName);
 }

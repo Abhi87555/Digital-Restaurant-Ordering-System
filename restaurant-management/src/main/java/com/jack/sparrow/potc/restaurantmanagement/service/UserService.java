@@ -24,8 +24,8 @@ public class UserService {
     }
 
     @Transactional()
-    public void updateAccess(RestaurantUser user){
-        repository.updateAccessById(user.isAdmin(), user.getUserName());
+    public int updateAccess(RestaurantUser user){
+        return repository.updateAccessById(user.isAdmin(), user.getUserName());
     }
 
     public List<RestaurantUser> getAllUsers(){
