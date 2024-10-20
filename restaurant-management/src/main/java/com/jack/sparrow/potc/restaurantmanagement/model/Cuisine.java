@@ -1,56 +1,34 @@
 package com.jack.sparrow.potc.restaurantmanagement.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Entity(name = "Cuisine")
-public class Cuisine implements BusinessEntity {
+import javax.persistence.*;
+
+@Entity
+@Table(name = "rm_cuisine")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Cuisine {
 
     @Id
-    @JsonProperty("cuisineName")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cuisine_id")
+    private Long cuisineId;
+
+    @Column(name = "cuisine_name", nullable = false, unique = true)
     private String cuisineName;
 
-    @JsonProperty("cost")
-    private long cost;
+    @Column(name = "cuisine_description")
+    private String cuisineDescription;
 
-    @JsonProperty("is_available")
-    private boolean is_available;
-
-    public Cuisine(){
-    }
-
-    public Cuisine(String cuisineName, long cost, boolean is_available) {
+    public Cuisine(String cuisineName, String cuisineDescription) {
         this.cuisineName = cuisineName;
-        this.cost = cost;
-        this.is_available = is_available;
-    }
-
-    public String getCuisineName() {
-        return cuisineName;
-    }
-
-    @JsonProperty("cuisineName")
-    public void setCuisineName(String cuisineName) {
-        this.cuisineName = cuisineName;
-    }
-
-    public long getCost() {
-        return cost;
-    }
-
-    @JsonProperty("cost")
-    public void setCost(long cost) {
-        this.cost = cost;
-    }
-
-
-    public boolean isIs_available() {
-        return is_available;
-    }
-
-    @JsonProperty("is_available")
-    public void setIs_available(boolean is_available) {
-        this.is_available = is_available;
+        this.cuisineDescription = cuisineDescription;
     }
 }
+

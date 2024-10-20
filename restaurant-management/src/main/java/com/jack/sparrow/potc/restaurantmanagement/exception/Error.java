@@ -2,17 +2,17 @@ package com.jack.sparrow.potc.restaurantmanagement.exception;
 
 public class Error {
 
-    private String errorMessage;
+    private String errorCode;
 
-    public Error(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public Error(String errorCode) {
+        this.errorCode = errorCode;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public String getErrorCode() {
+        return errorCode;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
     }
 }

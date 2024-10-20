@@ -1,89 +1,40 @@
 package com.jack.sparrow.potc.restaurantmanagement.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Set;
 
-@Entity(name = "Cart")
-public class Cart implements BusinessEntity{
+@Entity
+@Table(name = "rm_cart")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class Cart {
 
     @Id
-    @JsonProperty("cartId")
-    private String cartId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long cartId;
 
-    @JsonProperty("userName")
-    private String userName;
+    @Column(name = "total_item", nullable = false)
+    private Integer totalItem;
 
-    @JsonProperty("cuisines")
-    @ElementCollection
-    @CollectionTable(name = "cuisines_table", joinColumns = @JoinColumn(name = "cartId"))
-    @Column(name = "cuisines")
-    private Set<String> cuisines;
+    @Column(name = "cart_value", nullable = false)
+    private Double cartValue;
 
-    @JsonProperty("totalCost")
-    private long totalCost;
+    @ManyToOne
+    @JoinColumn(name = "table_id")
+    private RmTable table;
 
-    @JsonProperty("orderPlaced")
-    private boolean orderPlaced;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    private Set<CartItem> cartItems;
 
-    @JsonProperty("paid")
-    private boolean paid;
-
-    public Cart() {
-    }
-
-    public String getCartId() {
-        return cartId;
-    }
-
-    @JsonProperty("cartId")
-    public void setCartId(String cartId) {
-        this.cartId = cartId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    @JsonProperty("userName")
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public Set<String> getCuisines() {
-        return cuisines;
-    }
-
-    @JsonProperty("cuisines")
-    public void setCuisines(Set<String> cuisines) {
-        this.cuisines = cuisines;
-    }
-
-    public long getTotalCost() {
-        return totalCost;
-    }
-
-    @JsonProperty("totalCost")
-    public void setTotalCost(long totalCost) {
-        this.totalCost = totalCost;
-    }
-
-    public boolean isOrderPlaced() {
-        return orderPlaced;
-    }
-
-    @JsonProperty("orderPlaced")
-    public void setOrderPlaced(boolean orderPlaced) {
-        this.orderPlaced = orderPlaced;
-    }
-
-    public boolean isPaid() {
-        return paid;
-    }
-
-    @JsonProperty("paid")
-    public void setPaid(boolean paid) {
-        this.paid = paid;
+    public Cart(RmTable table, Set<CartItem> cartItems){
+        this.table = table;
+        this.cartItems = cartItems;
     }
 }
