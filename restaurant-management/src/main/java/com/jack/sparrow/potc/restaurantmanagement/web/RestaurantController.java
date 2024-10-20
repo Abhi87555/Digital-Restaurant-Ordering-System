@@ -1,20 +1,13 @@
 package com.jack.sparrow.potc.restaurantmanagement.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jack.sparrow.potc.restaurantmanagement.exception.Error;
 import com.jack.sparrow.potc.restaurantmanagement.model.Cart;
-import com.jack.sparrow.potc.restaurantmanagement.model.Context;
 import com.jack.sparrow.potc.restaurantmanagement.model.Cuisine;
-import com.jack.sparrow.potc.restaurantmanagement.model.RestaurantUser;
-import com.jack.sparrow.potc.restaurantmanagement.request.Request;
-import com.jack.sparrow.potc.restaurantmanagement.service.CartService;
-import com.jack.sparrow.potc.restaurantmanagement.service.MenuService;
-import com.jack.sparrow.potc.restaurantmanagement.service.OrderingService;
-import com.jack.sparrow.potc.restaurantmanagement.service.UserService;
+import com.jack.sparrow.potc.restaurantmanagement.requestModel.*;
+import com.jack.sparrow.potc.restaurantmanagement.service.RestaurantService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,167 +15,73 @@ import java.util.List;
 public class RestaurantController {
 
     @Autowired
-    private MenuService menuService;
+    private RestaurantService service;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
-    private CartService cartService;
-
-    @Autowired
-    private OrderingService orderingService;
-
-    @RequestMapping(value = "/addCuisine", method = RequestMethod.POST, produces = "application/json"
+    @RequestMapping(value = "/cuisine/addCuisine", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
-    public void addCuisineToMenu(@RequestBody Request<Cuisine> request) {
-        Cuisine cuisine = request.getEntity();
-        Context context = request.getContext();
-        if (userService.getUserById(context.getUsername()).isAdmin()) {
-            menuService.addCuisine(cuisine);
-        } else {
-            throw new RuntimeException("user does not have admin access");
-        }
+    public CuisineRestModel addCuisine(@RequestBody CuisineRestModel request) {
+        return service.addCuisine(request);
     }
 
-    @RequestMapping(value = "/updateAvailability", method = RequestMethod.POST, produces = "application/json"
-            , consumes = "application/json")
-    public void updateAvailability(@RequestBody Request<Cuisine> request) {
-        Cuisine cuisine = request.getEntity();
-        Context context = request.getContext();
-        if (userService.getUserById(context.getUsername()).isAdmin()) {
-            menuService.updateAvailability(cuisine.getCuisineName(), cuisine.isIs_available());
-        } else {
-            throw new RuntimeException("user does not have admin access");
-        }
+    @RequestMapping(value = "/cuisine", method = RequestMethod.GET, produces = "application/json")
+    public CuisineRestModel getCuisineByName(@RequestParam String cuisineName) {
+        return service.getCuisineByName(cuisineName);
     }
 
-    @RequestMapping(value = "/getAllCuisine", method = RequestMethod.POST, produces = "application/json"
+    @RequestMapping(value = "/menu/addItem", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
-    public List<Cuisine> getAllCuisinesFromMenu() {
-        return menuService.getListOfCuisines();
+    public MenuRestModel addItem(@RequestBody MenuRestModel request) {
+        return service.addItem(request);
     }
 
-    @RequestMapping(value = "/addUser", method = RequestMethod.POST, produces = "application/json"
-            , consumes = "application/json")
-    public void addUser(@RequestBody Request<RestaurantUser> request) {
-        RestaurantUser user = request.getEntity();
-        Context context = request.getContext();
-        if (userService.getAllUsers().isEmpty()) {
-            user.setAdmin(true);
-            userService.addUser(user);
-        } else if (userService.getUserById(context.getUsername()).isAdmin()) {
-            userService.addUser(user);
-        } else {
-            throw new RuntimeException("user does not have admin access");
-        }
+    @RequestMapping(value = "/menu", method = RequestMethod.GET, produces = "application/json")
+    public List<MenuRestModel> getItemByCuisine(@RequestParam String cuisineName) {
+        return service.getMenuByCuisine(cuisineName);
     }
 
-    @RequestMapping(value = "/updateUserAccess", method = RequestMethod.POST, produces = "application/json"
+    @RequestMapping(value = "/cart/create", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
-    public void updateUserAccess(@RequestBody Request<RestaurantUser> request) {
-        RestaurantUser user = request.getEntity();
-        Context context = request.getContext();
-        RestaurantUser userById = userService.getUserById(context.getUsername());
-        if (userById != null && userById.isAdmin()) {
-            userService.updateAccess(user);
-        } else {
-            throw new RuntimeException("user does not have admin access");
-        }
+    public CartRestModel createCart(@RequestBody CartRestModel request) {
+        return service.createCart(request);
     }
 
-    @RequestMapping(value = "/getAllUsers", method = RequestMethod.POST, produces = "application/json"
+    @RequestMapping(value = "/cart/update", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
-    public List<RestaurantUser> getAllUsers() {
-        return userService.getAllUsers();
+    public CartRestModel updateCart(@RequestBody CartRestModel request) {
+        return service.updateCart(request);
     }
 
-    @RequestMapping(value = "/createCart", method = RequestMethod.POST, produces = "application/json"
-            , consumes = "application/json")
-    public void createCart(@RequestBody Request<Cart> request) {
-        Context context = request.getContext();
-        RestaurantUser userById = userService.getUserById(context.getUsername());
-        if (userById != null) {
-            cartService.createNewCart(request.getEntity().getUserName());
-        } else {
-            throw new RuntimeException("user not found!!!");
-        }
+    @RequestMapping(value = "/cart", method = RequestMethod.GET, produces = "application/json")
+    public List<CartRestModel> getAllCarts() {
+        return service.getAllCarts();
     }
 
-    @RequestMapping(value = "/addCuisines", method = RequestMethod.POST, produces = "application/json"
+    @RequestMapping(value = "/order/placeOrder", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
-    public void addCuisines(@RequestBody Request<Cart> request) {
-        Context context = request.getContext();
-        RestaurantUser userById = userService.getUserById(context.getUsername());
-        if (userById != null) {
-            cartService.addCuisines(request.getEntity());
-        } else {
-            throw new RuntimeException("user not found!!!");
-        }
+    public OrderRestModel placeOrder(@RequestBody OrderRestModel request) {
+        return service.placeOrder(request);
     }
 
-    @RequestMapping(value = "/deleteCuisine", method = RequestMethod.POST, produces = "application/json"
+    @RequestMapping(value = "/order/updateStatus", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
-    public void deleteCuisine(@RequestBody Request<Cart> request) {
-        Context context = request.getContext();
-        RestaurantUser userById = userService.getUserById(context.getUsername());
-        if (userById != null) {
-            cartService.deleteCuisine(request.getEntity());
-        } else {
-            throw new RuntimeException("user not found!!!");
-        }
+    public OrderRestModel updateOrderStatus(@RequestBody OrderRestModel request) {
+        return service.updateOrderStatus(request);
     }
 
-    @RequestMapping(value = "/getCart", method = RequestMethod.POST, produces = "application/json"
-            , consumes = "application/json")
-    public Cart getCartByUserName(@RequestBody Request<Cart> request) {
-        Context context = request.getContext();
-        RestaurantUser userById = userService.getUserById(context.getUsername());
-        if (userById != null) {
-            return cartService.getCartByUserName(request.getEntity().getUserName());
-        } else {
-            throw new RuntimeException("user not found!!!");
-        }
+    @RequestMapping(value = "/order", method = RequestMethod.GET, produces = "application/json")
+    public List<OrderRestModel> getAllOrders() {
+        return service.getAllOrders();
     }
 
-    @RequestMapping(value = "/getAllCart", method = RequestMethod.POST, produces = "application/json"
+    @RequestMapping(value = "/payment/recordPayment", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
-    public List<Cart> getAllCarts(@RequestBody Request<Cart> request) {
-        Context context = request.getContext();
-        RestaurantUser userById = userService.getUserById(context.getUsername());
-        if (userById != null && userById.isAdmin()) {
-            return cartService.getAllCart();
-        } else {
-            throw new RuntimeException("user not found!!!");
-        }
+    public PaymentRestModel placeOrder(@RequestBody PaymentRestModel request) {
+        return service.recordPayment(request);
     }
 
-    @RequestMapping(value = "/getCartValue", method = RequestMethod.POST, produces = "application/json"
+    @RequestMapping(value = "/payment/updatePaymentStatus", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
-    public long getCartValue(@RequestBody Request<Cart> request) {
-        Context context = request.getContext();
-        RestaurantUser userById = userService.getUserById(context.getUsername());
-        if (userById != null) {
-            return orderingService.getTotalCartValue(request.getEntity().getUserName());
-        } else {
-            throw new RuntimeException("user not found!!!");
-        }
+    public PaymentRestModel updateOrderStatus(@RequestBody PaymentRestModel request) {
+        return service.updatePayment(request);
     }
-
-    @RequestMapping(value = "/placeOrder", method = RequestMethod.POST, produces = "application/json"
-            , consumes = "application/json")
-    public void placeOrder(@RequestBody Request<Cart> request) {
-        Context context = request.getContext();
-        RestaurantUser userById = userService.getUserById(context.getUsername());
-        if (userById != null) {
-            orderingService.placeOrder(request.getEntity().getUserName(), request.getEntity().getTotalCost());
-        } else {
-            throw new RuntimeException("user not found!!!");
-        }
-    }
-
-
 }
