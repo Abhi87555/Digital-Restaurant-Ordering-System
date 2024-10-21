@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class RmTableRestModel {
+public class RmTableRestModel implements RestModel {
 
     @JsonProperty("tableId")
     private long tableId;

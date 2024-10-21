@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
@@ -33,7 +34,10 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private Set<CartItem> cartItems;
 
-    public Cart(RmTable table, Set<CartItem> cartItems){
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
+
+    public Cart(RmTable table, Set<CartItem> cartItems) {
         this.table = table;
         this.cartItems = cartItems;
     }
