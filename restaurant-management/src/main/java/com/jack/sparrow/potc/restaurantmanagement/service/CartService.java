@@ -47,7 +47,7 @@ public class CartService {
                 CartItem cartItem = new CartItem(cartItemId, cart, menu, cartItemObj.getQuantity());
 
                 boolean isAdded = cartItems.add(cartItem);
-                totalCartValue = isAdded ? (totalCartValue + menu.getPrice()) : totalCartValue;
+                totalCartValue = isAdded ? (totalCartValue + menu.getPrice() * cartItemObj.getQuantity()) : totalCartValue;
             }
         }
         // calculate total items and cart value.
@@ -84,10 +84,10 @@ public class CartService {
 
                 if (cartItemObj.isDeleted()) {
                     boolean removed = cartItems.remove(cartItem);
-                    totalCartValue = removed ? (totalCartValue - menu.getPrice()) : totalCartValue;
+                    totalCartValue = removed ? (totalCartValue - menu.getPrice() * cartItemObj.getQuantity()) : totalCartValue;
                 } else {
                     boolean added = cartItems.add(cartItem);
-                    totalCartValue = added ? (totalCartValue + menu.getPrice()) : totalCartValue;
+                    totalCartValue = added ? (totalCartValue + menu.getPrice() * cartItemObj.getQuantity()) : totalCartValue;
                 }
             }
         }
@@ -148,6 +148,8 @@ public class CartService {
             RmTable table = tableRepository.findByTableNumber(cartObj.getTableNumber());
             if (table == null) {
                 throw new RestaurantManagementException("Invalid table number");
+            } else if ("OCCUPIED".equals(table.getTableStatus())) {
+                throw new RestaurantManagementException("Table is occupied");
             }
         }
         List<CartItemRestModel> cartItems = cartObj.getCartItems();
@@ -158,14 +160,9 @@ public class CartService {
         if (cartObj.getCartId() == null) {
             throw new RestaurantManagementException("Cart Id cannot be null while updating cart");
         }
-        if (!cartRepository.findById(cartObj.getCartId()).isPresent()) {
+        Optional<Cart> cartOptional = cartRepository.findById(cartObj.getCartId());
+        if (!cartOptional.isPresent()) {
             throw new RestaurantManagementException("Invalid cart id");
-        }
-        if (cartObj.getTableNumber() != null) {
-            RmTable table = tableRepository.findByTableNumber(cartObj.getTableNumber());
-            if (table == null) {
-                throw new RestaurantManagementException("Invalid table number");
-            }
         }
         List<CartItemRestModel> cartItems = cartObj.getCartItems();
         validateCartItems(cartItems);

@@ -40,7 +40,7 @@ public class RestaurantController {
         return service.createCart(request);
     }
 
-    @RequestMapping(value = "/cart", method = RequestMethod.PATCH, produces = "application/json"
+    @RequestMapping(value = "/cart/{cartId}", method = RequestMethod.PATCH, produces = "application/json"
             , consumes = "application/json")
     public Response updateCart(@PathVariable Long cartId, @RequestBody CartRestModel request) {
         return service.updateCart(cartId, request);
@@ -57,7 +57,7 @@ public class RestaurantController {
         return service.placeOrder(request);
     }
 
-    @RequestMapping(value = "/order", method = RequestMethod.PATCH, produces = "application/json"
+    @RequestMapping(value = "/order/{orderId}", method = RequestMethod.PATCH, produces = "application/json"
             , consumes = "application/json")
     public Response updateOrderStatus(@PathVariable Long orderId, @RequestBody OrderRestModel request) {
         return service.updateOrderStatus(orderId, request);
@@ -74,7 +74,7 @@ public class RestaurantController {
         return service.recordPayment(request);
     }
 
-    @RequestMapping(value = "/payment", method = RequestMethod.PATCH, produces = "application/json"
+    @RequestMapping(value = "/payment/{paymentId}", method = RequestMethod.PATCH, produces = "application/json"
             , consumes = "application/json")
     public Response updateOrderStatus(@PathVariable Long paymentId, @RequestBody PaymentRestModel request) {
         return service.updatePayment(paymentId, request);

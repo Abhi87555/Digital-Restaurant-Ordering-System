@@ -36,7 +36,7 @@ public class PaymentService {
         try {
             Order order = orderRepository.findById(paymentObj.getOrderId()).get();
             Payment payment = new Payment(order, paymentObj.getPaymentMethod(), paymentObj.getPaymentStatus(),
-                    paymentObj.getAmountPaid(), new Timestamp(new Date().getTime()));
+                    paymentObj.getAmountToBePaid(), new Timestamp(new Date().getTime()));
 
             if ("PAID".equals(paymentObj.getPaymentStatus())) {
                 OrderRestModel orderObj = new OrderRestModel(order.getOrderId(), "COMPLETED");
@@ -103,7 +103,7 @@ public class PaymentService {
                 throw new RestaurantManagementException("Invalid payment status");
             }
         }
-        if (!orderOptional.get().getTotalCost().equals(paymentObj.getAmountPaid())) {
+        if (!orderOptional.get().getTotalCost().equals(paymentObj.getAmountToBePaid())) {
             throw new RestaurantManagementException("Amount paid is not equal to total cost of the order");
         }
     }

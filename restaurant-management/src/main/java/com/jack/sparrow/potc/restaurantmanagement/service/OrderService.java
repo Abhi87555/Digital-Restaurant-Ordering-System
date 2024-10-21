@@ -37,7 +37,7 @@ public class OrderService {
     public OrderService() {
         validStatus.put("CONFIRMED", Collections.emptyList());
         validStatus.put("PREPARING", Collections.singletonList("CONFIRMED"));
-        validStatus.put("SERVED", Collections.singletonList("CONFIRMED"));
+        validStatus.put("SERVED", Collections.singletonList("PREPARING"));
         validStatus.put("COMPLETED", Arrays.asList("PREPARING", "SERVED"));
         validStatus.put("CANCELLED", Collections.singletonList("CONFIRMED"));
     }
@@ -172,7 +172,7 @@ public class OrderService {
         }
 
         String orderStatus = order.get().getOrderStatus();
-        if (validStatus.get(orderObj.getOrderStatus()).contains(orderStatus)) {
+        if (!validStatus.get(orderObj.getOrderStatus()).contains(orderStatus)) {
             throw new RestaurantManagementException("Invalid order status transition from " +
                     orderStatus + " to " + orderObj.getOrderStatus());
         }
