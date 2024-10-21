@@ -1,5 +1,6 @@
 package com.jack.sparrow.potc.restaurantmanagement.service;
 
+import com.jack.sparrow.potc.restaurantmanagement.exception.RestaurantManagementException;
 import com.jack.sparrow.potc.restaurantmanagement.model.Cuisine;
 import com.jack.sparrow.potc.restaurantmanagement.repository.CuisineRepository;
 import com.jack.sparrow.potc.restaurantmanagement.requestModel.CuisineRestModel;
@@ -20,8 +21,9 @@ public class CuisineService {
         try {
             repository.save(cuisine);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RestaurantManagementException("Exception while adding cuisine", e);
         }
+        cuisineObj.setCuisineId(cuisine.getCuisineId());
         return cuisineObj;
     }
 
@@ -31,7 +33,7 @@ public class CuisineService {
             return cuisineObj.map(cuisine -> new CuisineRestModel(cuisine.getCuisineId(), cuisine.getCuisineName(), cuisine.getCuisineDescription()))
                     .orElseThrow(() -> new RuntimeException("Invalid cuisineId"));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RestaurantManagementException("Exception while fetching cuisine by cuisineId : " + cuisineId, e);
         }
     }
 
@@ -41,25 +43,22 @@ public class CuisineService {
             return cuisineObj.map(cuisine -> new CuisineRestModel(cuisine.getCuisineId(), cuisine.getCuisineName(), cuisine.getCuisineDescription()))
                     .orElseThrow(() -> new RuntimeException("Invalid cuisine name"));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RestaurantManagementException("Exception while fetching cuisines", e);
         }
     }
 
     private void validateCuisine(CuisineRestModel cuisine) {
         if (cuisine.getCuisineId() != null) {
-            throw new RuntimeException("CuisineId is an auto generated field");
+            throw new RestaurantManagementException("Cuisine Id is an auto generated field");
         }
-
         if (cuisine.getCuisineName() == null) {
-            throw new RuntimeException("Cuisine name cannot be null");
+            throw new RestaurantManagementException("Cuisine name cannot be null");
         }
-
         if (cuisine.getCuisineName().length() > 100) {
-            throw new RuntimeException("Cuisine name length exceeded, should be less tha 100 characters");
+            throw new RestaurantManagementException("Cuisine name length exceeded, should be less tha 100 characters");
         }
-
         if (repository.findByCuisineName(cuisine.getCuisineName()) != null) {
-            throw new RuntimeException("Cuisine already exist with same name");
+            throw new RestaurantManagementException("Cuisine already exist with same name");
         }
     }
 }
