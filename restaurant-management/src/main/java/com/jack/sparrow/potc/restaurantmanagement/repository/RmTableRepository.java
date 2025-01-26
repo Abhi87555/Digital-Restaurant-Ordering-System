@@ -1,6 +1,5 @@
 package com.jack.sparrow.potc.restaurantmanagement.repository;
 
-import com.jack.sparrow.potc.restaurantmanagement.model.Cuisine;
 import com.jack.sparrow.potc.restaurantmanagement.model.RmTable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

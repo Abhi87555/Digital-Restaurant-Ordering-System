@@ -37,7 +37,7 @@ public class OrderService {
     public OrderService() {
         validStatus.put("CONFIRMED", Collections.emptyList());
         validStatus.put("PREPARING", Collections.singletonList("CONFIRMED"));
-        validStatus.put("SERVED", Collections.singletonList("CONFIRMED"));
+        validStatus.put("SERVED", Collections.singletonList("PREPARING"));
         validStatus.put("COMPLETED", Arrays.asList("PREPARING", "SERVED"));
         validStatus.put("CANCELLED", Collections.singletonList("CONFIRMED"));
     }
@@ -119,6 +119,16 @@ public class OrderService {
         }
     }
 
+    public RestModel findByOrderId(Long orderId) {
+        try {
+            Optional<Order> orderOptional = orderRepository.findById(orderId);
+            return orderOptional.map(this::convertOrderToRestModel)
+                    .orElseThrow(() -> new RuntimeException("Invalid orderId"));
+        } catch (Exception e) {
+            throw new RestaurantManagementException("Exception while fetching all orders", e);
+        }
+    }
+
     public List<RestModel> getAllOrder() {
         try {
             List<Order> orderList = orderRepository.findAll();
@@ -172,7 +182,7 @@ public class OrderService {
         }
 
         String orderStatus = order.get().getOrderStatus();
-        if (validStatus.get(orderObj.getOrderStatus()).contains(orderStatus)) {
+        if (!validStatus.get(orderObj.getOrderStatus()).contains(orderStatus)) {
             throw new RestaurantManagementException("Invalid order status transition from " +
                     orderStatus + " to " + orderObj.getOrderStatus());
         }

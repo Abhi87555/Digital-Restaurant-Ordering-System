@@ -20,4 +20,7 @@ public class CuisineRestModel implements RestModel {
 
     @JsonProperty("cuisineDescription")
     private String cuisineDescription;
+
+    @JsonProperty("cuisineType")
+    private String cuisineType;
 }

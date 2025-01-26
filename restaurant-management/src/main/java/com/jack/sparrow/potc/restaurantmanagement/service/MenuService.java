@@ -64,6 +64,16 @@ public class MenuService {
         }
     }
 
+    public List<RestModel> getMenu() {
+        try {
+            List<Menu> menuList = menuRepository.findAll();
+            return menuList.stream().map(this::convertMenuToRestModel)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RestaurantManagementException("Exception while fetching menu", e);
+        }
+    }
+
     private MenuRestModel convertMenuToRestModel(Menu menu) {
         return new MenuRestModel(menu.getItemId(), menu.getCuisine().getCuisineName(),
                 menu.getPortion(), menu.getPrice());

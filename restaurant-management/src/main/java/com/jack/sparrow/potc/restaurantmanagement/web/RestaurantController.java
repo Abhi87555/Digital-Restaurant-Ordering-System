@@ -34,16 +34,26 @@ public class RestaurantController {
         return service.getMenuByCuisine(cuisineName);
     }
 
+    @RequestMapping(value = "/menu/all", method = RequestMethod.GET, produces = "application/json")
+    public Response getMenu() {
+        return service.getMenu();
+    }
+
     @RequestMapping(value = "/cart", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
     public Response createCart(@RequestBody CartRestModel request) {
         return service.createCart(request);
     }
 
-    @RequestMapping(value = "/cart", method = RequestMethod.PATCH, produces = "application/json"
+    @RequestMapping(value = "/cart/{cartId}", method = RequestMethod.PATCH, produces = "application/json"
             , consumes = "application/json")
     public Response updateCart(@PathVariable Long cartId, @RequestBody CartRestModel request) {
         return service.updateCart(cartId, request);
+    }
+
+    @RequestMapping(value = "/cart/{cartId}", method = RequestMethod.GET, produces = "application/json")
+    public Response findByCartId(@PathVariable Long cartId) {
+        return service.findbyCartId(cartId);
     }
 
     @RequestMapping(value = "/cart", method = RequestMethod.GET, produces = "application/json")
@@ -57,10 +67,15 @@ public class RestaurantController {
         return service.placeOrder(request);
     }
 
-    @RequestMapping(value = "/order", method = RequestMethod.PATCH, produces = "application/json"
+    @RequestMapping(value = "/order/{orderId}", method = RequestMethod.PATCH, produces = "application/json"
             , consumes = "application/json")
     public Response updateOrderStatus(@PathVariable Long orderId, @RequestBody OrderRestModel request) {
         return service.updateOrderStatus(orderId, request);
+    }
+
+    @RequestMapping(value = "/order/{orderId}", method = RequestMethod.GET, produces = "application/json")
+    public Response findByOrderId(@PathVariable Long orderId) {
+        return service.findByOrderId(orderId);
     }
 
     @RequestMapping(value = "/order", method = RequestMethod.GET, produces = "application/json")
@@ -70,13 +85,23 @@ public class RestaurantController {
 
     @RequestMapping(value = "/payment", method = RequestMethod.POST, produces = "application/json"
             , consumes = "application/json")
-    public Response placeOrder(@RequestBody PaymentRestModel request) {
+    public Response recordPayment(@RequestBody PaymentRestModel request) {
         return service.recordPayment(request);
     }
 
-    @RequestMapping(value = "/payment", method = RequestMethod.PATCH, produces = "application/json"
+    @RequestMapping(value = "/payment/{paymentId}", method = RequestMethod.PATCH, produces = "application/json"
             , consumes = "application/json")
-    public Response updateOrderStatus(@PathVariable Long paymentId, @RequestBody PaymentRestModel request) {
+    public Response updatePaymentStatus(@PathVariable Long paymentId, @RequestBody PaymentRestModel request) {
         return service.updatePayment(paymentId, request);
+    }
+
+    @RequestMapping(value = "/table/all", method = RequestMethod.GET, produces = "application/json")
+    public Response getAllTable() {
+        return service.getAllTable();
+    }
+
+    @RequestMapping(value = "/table", method = RequestMethod.GET, produces = "application/json")
+    public Response getTableByTableNumber(@RequestParam String tableNumber) {
+        return service.getTableByTableNumber(tableNumber);
     }
 }

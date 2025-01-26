@@ -26,8 +26,8 @@ public class PaymentRestModel implements RestModel {
     @JsonProperty("paymentStatus")
     private String paymentStatus;
 
-    @JsonProperty("amountPaid")
-    private Double amountPaid;
+    @JsonProperty("amountToBePaid")
+    private Double amountToBePaid;
 
     @JsonProperty("paymentDate")
     private Timestamp paymentDate;

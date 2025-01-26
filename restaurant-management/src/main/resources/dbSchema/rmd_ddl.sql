@@ -14,7 +14,8 @@ CREATE INDEX idx_customers_email ON rm_customer(email);
 CREATE TABLE rm_cuisine (
     cuisine_id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     cuisine_name VARCHAR(100) UNIQUE NOT NULL,
-    cuisine_description TEXT
+    cuisine_description TEXT,
+    cuisine_type VARCHAR(20) NOT NULL
 );
 
 -- Create an index on cuisine_name for faster searches
