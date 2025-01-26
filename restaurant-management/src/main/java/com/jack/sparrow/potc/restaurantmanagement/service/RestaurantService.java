@@ -1,13 +1,14 @@
 package com.jack.sparrow.potc.restaurantmanagement.service;
 
-import com.jack.sparrow.potc.restaurantmanagement.model.Cuisine;
-import com.jack.sparrow.potc.restaurantmanagement.model.Menu;
+import com.jack.sparrow.potc.restaurantmanagement.exception.Error;
+import com.jack.sparrow.potc.restaurantmanagement.exception.RestaurantManagementException;
 import com.jack.sparrow.potc.restaurantmanagement.requestModel.*;
+import com.jack.sparrow.potc.restaurantmanagement.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RestaurantService {
@@ -27,51 +28,161 @@ public class RestaurantService {
     @Autowired
     private PaymentService paymentService;
 
-    public CuisineRestModel addCuisine(CuisineRestModel request){
-        return cuisineService.addCuisine(request);
+    @Autowired
+    private TableService tableService;
+
+    public Response addCuisine(CuisineRestModel request) {
+        try {
+            return createResponse(cuisineService.addCuisine(request));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public CuisineRestModel getCuisineByName(String cuisineName){
-        return cuisineService.findByCuisineName(cuisineName);
+    public Response getCuisineByName(String cuisineName) {
+        try {
+            return createResponse(cuisineService.findByCuisineName(cuisineName));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public MenuRestModel addItem(MenuRestModel request){
-        return menuService.addItem(request);
+    public Response addItem(MenuRestModel request) {
+        try {
+            return createResponse(menuService.addItem(request));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public List<MenuRestModel> getMenuByCuisine(String cuisineName){
-        return menuService.findByCuisine(cuisineName);
+    public Response getMenuByCuisine(String cuisineName) {
+        try {
+            return createResponse(menuService.findByCuisine(cuisineName));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public CartRestModel createCart(CartRestModel request){
-        return cartService.createCart(request);
+    public Response getMenu() {
+        try {
+            return createResponse(menuService.getMenu());
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public CartRestModel updateCart(CartRestModel request){
-        return cartService.updateCart(request);
+    public Response createCart(CartRestModel request) {
+        try {
+            return createResponse(cartService.createCart(request));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public List<CartRestModel> getAllCarts(){
-        return cartService.getAllCart();
+    public Response updateCart(Long cartId, CartRestModel request) {
+        try {
+            request.setCartId(cartId);
+            return createResponse(cartService.updateCart(request));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public OrderRestModel placeOrder(OrderRestModel request){
-        return orderService.createOrder(request);
+    public Response findbyCartId(Long cartId) {
+        try {
+            return createResponse(cartService.findByCartId(cartId));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public OrderRestModel updateOrderStatus(OrderRestModel request){
-        return orderService.updateOrder(request);
+    public Response getAllCarts() {
+        try {
+            return createResponse(cartService.getAllCart());
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public List<OrderRestModel> getAllOrders(){
-        return orderService.getAllOrder();
+    public Response placeOrder(OrderRestModel request) {
+        try {
+            return createResponse(orderService.createOrder(request));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public PaymentRestModel recordPayment(PaymentRestModel request){
-        return paymentService.recordPayment(request);
+    public Response updateOrderStatus(Long orderId, OrderRestModel request) {
+        try {
+            request.setOrderId(orderId);
+            return createResponse(orderService.updateOrder(request));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
     }
 
-    public PaymentRestModel updatePayment(PaymentRestModel request){
-        return paymentService.updatePayment(request);
+    public Response findByOrderId(Long orderId) {
+        try {
+            return createResponse(orderService.findByOrderId(orderId));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
+    public Response getAllOrders() {
+        try {
+            return createResponse(orderService.getAllOrder());
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
+    public Response recordPayment(PaymentRestModel request) {
+        try {
+            return createResponse(paymentService.recordPayment(request));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
+    public Response updatePayment(Long paymentId, PaymentRestModel request) {
+        try {
+            request.setPaymentId(paymentId);
+            return createResponse(paymentService.updatePayment(request));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
+    public Response getAllTable(){
+        try {
+            return createResponse(tableService.getAllTable());
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
+    public Response getTableByTableNumber(String tableNumber){
+        try {
+            return createResponse(tableService.getTableByTableNumber(tableNumber));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
+    private Response createResponse(RestModel restModel) {
+        List<RestModel> restModelList = new ArrayList<>();
+        restModelList.add(restModel);
+        return new Response(restModelList);
+    }
+
+    private Response createResponse(List<RestModel> restModelList) {
+        return new Response(restModelList);
+    }
+
+    private Response createResponse(Exception e) {
+        Error error = e instanceof RestaurantManagementException ? ((RestaurantManagementException) e).getError()
+                : new Error(e.getMessage());
+        return new Response(error);
     }
 }

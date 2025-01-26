@@ -26,9 +26,13 @@ public class Cuisine {
     @Column(name = "cuisine_description")
     private String cuisineDescription;
 
-    public Cuisine(String cuisineName, String cuisineDescription) {
+    @Column(name = "cuisine_type", nullable = false)
+    private String cuisineType;
+
+    public Cuisine(String cuisineName, String cuisineDescription, String cuisineType) {
         this.cuisineName = cuisineName;
         this.cuisineDescription = cuisineDescription;
+        this.cuisineType = cuisineType;
     }
 }
 

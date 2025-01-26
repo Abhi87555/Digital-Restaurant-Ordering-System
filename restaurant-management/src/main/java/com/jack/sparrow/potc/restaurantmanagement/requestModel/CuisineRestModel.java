@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CuisineRestModel {
+public class CuisineRestModel implements RestModel {
 
     @JsonProperty("cuisineId")
     private Long cuisineId;
@@ -20,4 +20,7 @@ public class CuisineRestModel {
 
     @JsonProperty("cuisineDescription")
     private String cuisineDescription;
+
+    @JsonProperty("cuisineType")
+    private String cuisineType;
 }

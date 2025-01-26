@@ -24,4 +24,7 @@ public class RmTable {
 
     @Column(name = "table_status")
     private String tableStatus;
+
+    @Column(name = "capacity", nullable = false)
+    private Integer capacity;
 }

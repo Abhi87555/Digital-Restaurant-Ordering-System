@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
@@ -36,6 +37,9 @@ public class Order {
 
     @Column(name = "order_status")
     private String orderStatus;
+
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private Set<OrderItem> orderItems;

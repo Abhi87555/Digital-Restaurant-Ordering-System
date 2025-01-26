@@ -10,16 +10,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class RmTableRestModel {
+public class RmTableRestModel implements RestModel {
 
     @JsonProperty("tableId")
     private long tableId;
 
     @JsonProperty("tableNumber")
-    //@NotNull(message = "Table number cannot be null")
     private String tableNumber;
 
     @JsonProperty("tableStatus")
-    //@PredefinedValues(value = {"AVAILABLE","OCCUPIED"}, message = "Invalid table status")
     private String tableStatus;
+
+    @JsonProperty("capacity")
+    private Integer capacity;
 }

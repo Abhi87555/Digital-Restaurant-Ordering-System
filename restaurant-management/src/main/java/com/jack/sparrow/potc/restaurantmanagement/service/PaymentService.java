@@ -1,5 +1,6 @@
 package com.jack.sparrow.potc.restaurantmanagement.service;
 
+import com.jack.sparrow.potc.restaurantmanagement.exception.RestaurantManagementException;
 import com.jack.sparrow.potc.restaurantmanagement.model.Order;
 import com.jack.sparrow.potc.restaurantmanagement.model.Payment;
 import com.jack.sparrow.potc.restaurantmanagement.repository.OrderRepository;
@@ -35,17 +36,18 @@ public class PaymentService {
         try {
             Order order = orderRepository.findById(paymentObj.getOrderId()).get();
             Payment payment = new Payment(order, paymentObj.getPaymentMethod(), paymentObj.getPaymentStatus(),
-                    paymentObj.getAmountPaid(), new Timestamp(new Date().getTime()));
+                    paymentObj.getAmountToBePaid(), new Timestamp(new Date().getTime()));
 
-            if ("PAID".equals(paymentObj.getPaymentStatus())){
+            if ("PAID".equals(paymentObj.getPaymentStatus())) {
                 OrderRestModel orderObj = new OrderRestModel(order.getOrderId(), "COMPLETED");
                 orderService.updateOrder(orderObj);
             }
             paymentRepository.save(payment);
-            return paymentObj;
+            paymentObj.setPaymentId(payment.getPaymentId());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RestaurantManagementException("Exception while recording payment", e);
         }
+        return paymentObj;
     }
 
     @Transactional
@@ -56,7 +58,7 @@ public class PaymentService {
             Order order = payment.getOrder();
             payment.setPaymentStatus("PAID");
 
-            if ("PAID".equals(paymentObj.getPaymentStatus())){
+            if ("PAID".equals(paymentObj.getPaymentStatus())) {
                 OrderRestModel orderObj = new OrderRestModel(order.getOrderId(), "COMPLETED");
                 orderService.updateOrder(orderObj);
             }
@@ -64,45 +66,45 @@ public class PaymentService {
             paymentRepository.save(payment);
             return paymentObj;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RestaurantManagementException("Exception while updating payment", e);
         }
     }
 
     private void validateUpdatePayment(PaymentRestModel paymentObj) {
         if (paymentObj.getPaymentId() == null) {
-            throw new RuntimeException("Payment id cannot be null");
+            throw new RestaurantManagementException("Payment id cannot be null");
         }
         Optional<Payment> paymentOptional = paymentRepository.findById(paymentObj.getPaymentId());
-        if (!paymentOptional.isPresent()){
-            throw new RuntimeException("Invalid payment id");
+        if (!paymentOptional.isPresent()) {
+            throw new RestaurantManagementException("Invalid payment id");
         }
         if ("PAID".equals(paymentOptional.get().getPaymentStatus())) {
-            throw new RuntimeException("Payment already recorded for this order");
+            throw new RestaurantManagementException("Payment already recorded for this order");
         }
     }
 
     private void validatePayment(PaymentRestModel paymentObj) {
         if (paymentObj.getOrderId() == null) {
-            throw new RuntimeException("Order id cannot be null");
+            throw new RestaurantManagementException("Order id cannot be null");
         }
         Optional<Order> orderOptional = orderRepository.findById(paymentObj.getOrderId());
         if (!orderOptional.isPresent()) {
-            throw new RuntimeException("Invalid order id");
+            throw new RestaurantManagementException("Invalid order id");
         }
         if (paymentObj.getPaymentMethod() == null) {
-            throw new RuntimeException("Payment method cannot be null");
+            throw new RestaurantManagementException("Payment method cannot be null");
         }
         if (!Arrays.asList(validPaymentMethod).contains(paymentObj.getPaymentMethod())) {
-            throw new RuntimeException("Invalid payment method");
+            throw new RestaurantManagementException("Invalid payment method");
         }
         if (paymentObj.getPaymentStatus() != null) {
             if (!"UNPAID".equals(paymentObj.getPaymentStatus())
                     && "PAID".equals(paymentObj.getPaymentStatus())) {
-                throw new RuntimeException("Invalid payment status");
+                throw new RestaurantManagementException("Invalid payment status");
             }
         }
-        if (!orderOptional.get().getTotalCost().equals(paymentObj.getAmountPaid())) {
-            throw new RuntimeException("Amount paid is not equal to total cost of the order");
+        if (!orderOptional.get().getTotalCost().equals(paymentObj.getAmountToBePaid())) {
+            throw new RestaurantManagementException("Amount paid is not equal to total cost of the order");
         }
     }
 }

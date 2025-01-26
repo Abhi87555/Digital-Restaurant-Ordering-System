@@ -1,15 +1,14 @@
 package com.jack.sparrow.potc.restaurantmanagement.service;
 
+import com.jack.sparrow.potc.restaurantmanagement.exception.RestaurantManagementException;
 import com.jack.sparrow.potc.restaurantmanagement.model.*;
 import com.jack.sparrow.potc.restaurantmanagement.repository.*;
-import com.jack.sparrow.potc.restaurantmanagement.requestModel.CartItemRestModel;
-import com.jack.sparrow.potc.restaurantmanagement.requestModel.CartRestModel;
-import com.jack.sparrow.potc.restaurantmanagement.requestModel.OrderItemRestModel;
-import com.jack.sparrow.potc.restaurantmanagement.requestModel.OrderRestModel;
+import com.jack.sparrow.potc.restaurantmanagement.requestModel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,16 +34,16 @@ public class OrderService {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public OrderService(){
+    public OrderService() {
         validStatus.put("CONFIRMED", Collections.emptyList());
         validStatus.put("PREPARING", Collections.singletonList("CONFIRMED"));
-        validStatus.put("SERVED", Collections.singletonList("CONFIRMED"));
+        validStatus.put("SERVED", Collections.singletonList("PREPARING"));
         validStatus.put("COMPLETED", Arrays.asList("PREPARING", "SERVED"));
         validStatus.put("CANCELLED", Collections.singletonList("CONFIRMED"));
     }
 
     @Transactional
-    public OrderRestModel createOrder(OrderRestModel orderObj){
+    public OrderRestModel createOrder(OrderRestModel orderObj) {
         validateOrder(orderObj);
 
         // get cart from carId
@@ -84,95 +83,107 @@ public class OrderService {
             orderRepository.save(order);
             cartRepository.delete(cart); // delete cart once order is placed
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RestaurantManagementException("Exception while creating order", e);
         }
+        orderObj.setOrderId(order.getOrderId());
         return orderObj;
     }
 
-    public OrderRestModel findbyOrderId(long orderId){
+    public OrderRestModel findbyOrderId(long orderId) {
         try {
             Optional<Order> orderObj = orderRepository.findById(orderId);
             return orderObj.map(this::convertOrderToRestModel)
                     .orElseThrow(() -> new RuntimeException("Invalid order id"));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RestaurantManagementException("Exception while fetching order by orderId : " + orderId, e);
         }
     }
 
     @Transactional
-    public OrderRestModel updateOrder(OrderRestModel orderObj){
+    public OrderRestModel updateOrder(OrderRestModel orderObj) {
         validateUpdateOrder(orderObj);
-        try{
+        try {
             Order order = orderRepository.findById(orderObj.getOrderId()).get();
-            if ("COMPLETED".equals(orderObj.getOrderStatus()) || "CANCELLED".equals(orderObj.getOrderStatus())){
+            if ("COMPLETED".equals(orderObj.getOrderStatus()) || "CANCELLED".equals(orderObj.getOrderStatus())) {
                 RmTable table = order.getTable();
-                if (table != null){
+                if (table != null) {
                     table.setTableStatus("AVAILABLE");
                     tableRepository.save(table);
                 }
             }
             order.setOrderStatus(orderObj.getOrderStatus());
+            order.setUpdatedAt(new Timestamp(new Date().getTime()));
             return orderObj;
-        } catch (Exception e){
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RestaurantManagementException("Exception while updating order", e);
         }
     }
 
-    public List<OrderRestModel> getAllOrder(){
+    public RestModel findByOrderId(Long orderId) {
+        try {
+            Optional<Order> orderOptional = orderRepository.findById(orderId);
+            return orderOptional.map(this::convertOrderToRestModel)
+                    .orElseThrow(() -> new RuntimeException("Invalid orderId"));
+        } catch (Exception e) {
+            throw new RestaurantManagementException("Exception while fetching all orders", e);
+        }
+    }
+
+    public List<RestModel> getAllOrder() {
         try {
             List<Order> orderList = orderRepository.findAll();
-            List<OrderRestModel> orderRestModelList = new ArrayList<>();
-            for (Order order : orderList){
+            List<RestModel> orderRestModelList = new ArrayList<>();
+            for (Order order : orderList) {
                 orderRestModelList.add(convertOrderToRestModel(order));
             }
             return orderRestModelList;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RestaurantManagementException("Exception while fetching all orders", e);
         }
     }
 
-    private void validateOrder(OrderRestModel orderObj){
-        if (orderObj.getCartId() == null){
-            throw new RuntimeException("cartId cannot be null");
+    private void validateOrder(OrderRestModel orderObj) {
+        if (orderObj.getCartId() == null) {
+            throw new RestaurantManagementException("Cart Id cannot be null");
         }
-        if (!cartRepository.findById(orderObj.getCartId()).isPresent()){
-            throw new RuntimeException("Invalid cartId");
+        if (!cartRepository.findById(orderObj.getCartId()).isPresent()) {
+            throw new RestaurantManagementException("Invalid cartId");
         }
         if (orderObj.getCustomerName() == null) {
-            throw new RuntimeException("customerName cannot be null");
+            throw new RestaurantManagementException("Customer name cannot be null");
         }
         if (orderObj.getCustomerName().length() < 2 || orderObj.getCustomerName().length() > 50) {
-            throw new RuntimeException("customerName length exceed, should be between 2 to 50 characters");
+            throw new RestaurantManagementException("Customer name length exceed, should be between 2 to 50 characters");
         }
         if (orderObj.getCustomerEmail() == null) {
-            throw new RuntimeException("customerEmail cannot be null");
+            throw new RestaurantManagementException("Customer email cannot be null");
         }
         if (!isValidEmail(orderObj.getCustomerEmail())) {
-            throw new RuntimeException("customerEmail is not a valid email id");
+            throw new RestaurantManagementException("Customer email is not a valid email id");
         }
         if (orderObj.getContactNo() != null && !isValidContactNo(orderObj.getContactNo())) {
-            throw new RuntimeException("contact number is not a valid number");
+            throw new RestaurantManagementException("Contact number is not a valid number");
         }
     }
 
-    private void validateUpdateOrder(OrderRestModel orderObj){
+    private void validateUpdateOrder(OrderRestModel orderObj) {
         if (orderObj.getOrderId() == null) {
-            throw new RuntimeException("order id cannot be null");
+            throw new RestaurantManagementException("Order id cannot be null");
         }
         Optional<Order> order = orderRepository.findById(orderObj.getOrderId());
         if (!order.isPresent()) {
-            throw new RuntimeException("Invalid order id");
+            throw new RestaurantManagementException("Invalid order id");
         }
         if (orderObj.getOrderStatus() == null) {
-            throw new RuntimeException("Order status cannot be null");
+            throw new RestaurantManagementException("Order status cannot be null");
         }
         if (!validStatus.containsKey(orderObj.getOrderStatus())) {
-            throw new RuntimeException("Invalid order status");
+            throw new RestaurantManagementException("Invalid order status");
         }
 
         String orderStatus = order.get().getOrderStatus();
-        if (validStatus.get(orderObj.getOrderStatus()).contains(orderStatus)){
-            throw new RuntimeException("Invalid order status transition from " +
+        if (!validStatus.get(orderObj.getOrderStatus()).contains(orderStatus)) {
+            throw new RestaurantManagementException("Invalid order status transition from " +
                     orderStatus + " to " + orderObj.getOrderStatus());
         }
     }
@@ -191,7 +202,7 @@ public class OrderService {
         return matcher.matches();
     }
 
-    private OrderRestModel convertOrderToRestModel(Order order){
+    private OrderRestModel convertOrderToRestModel(Order order) {
         Set<OrderItem> orderItems = order.getOrderItems();
         List<OrderItemRestModel> orderItemRestModels = orderItems.stream()
                 .map(this::convertOrderItemToRestModel)
@@ -202,7 +213,7 @@ public class OrderService {
                 order.getTotalItem(), order.getTotalCost());
     }
 
-    private OrderItemRestModel convertOrderItemToRestModel(OrderItem orderItem){
+    private OrderItemRestModel convertOrderItemToRestModel(OrderItem orderItem) {
         return new OrderItemRestModel(orderItem.getItem().getItemId(),
                 orderItem.getItem().getCuisine().getCuisineName(),
                 orderItem.getItem().getPortion(), orderItem.getQuantity(), orderItem.getItem().getPrice());

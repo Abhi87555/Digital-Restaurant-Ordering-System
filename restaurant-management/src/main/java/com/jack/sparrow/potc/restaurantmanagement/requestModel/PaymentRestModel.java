@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Getter
 @Setter
-public class PaymentRestModel {
+public class PaymentRestModel implements RestModel {
 
     @JsonProperty("paymentId")
     private Long paymentId;
@@ -26,8 +26,8 @@ public class PaymentRestModel {
     @JsonProperty("paymentStatus")
     private String paymentStatus;
 
-    @JsonProperty("amountPaid")
-    private Double amountPaid;
+    @JsonProperty("amountToBePaid")
+    private Double amountToBePaid;
 
     @JsonProperty("paymentDate")
     private Timestamp paymentDate;
