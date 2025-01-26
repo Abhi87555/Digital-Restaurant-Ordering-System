@@ -17,7 +17,7 @@ public class CuisineService {
 
     public CuisineRestModel addCuisine(CuisineRestModel cuisineObj) {
         validateCuisine(cuisineObj);
-        Cuisine cuisine = new Cuisine(cuisineObj.getCuisineName(), cuisineObj.getCuisineDescription());
+        Cuisine cuisine = new Cuisine(cuisineObj.getCuisineName(), cuisineObj.getCuisineDescription(), cuisineObj.getCuisineType());
         try {
             repository.save(cuisine);
         } catch (Exception e) {
@@ -30,7 +30,8 @@ public class CuisineService {
     public CuisineRestModel findByCuisineId(Long cuisineId) {
         try {
             Optional<Cuisine> cuisineObj = repository.findById(cuisineId);
-            return cuisineObj.map(cuisine -> new CuisineRestModel(cuisine.getCuisineId(), cuisine.getCuisineName(), cuisine.getCuisineDescription()))
+            return cuisineObj.map(cuisine -> new CuisineRestModel(cuisine.getCuisineId(), cuisine.getCuisineName(),
+                    cuisine.getCuisineDescription(), cuisine.getCuisineType()))
                     .orElseThrow(() -> new RuntimeException("Invalid cuisineId"));
         } catch (Exception e) {
             throw new RestaurantManagementException("Exception while fetching cuisine by cuisineId : " + cuisineId, e);
@@ -40,7 +41,8 @@ public class CuisineService {
     public CuisineRestModel findByCuisineName(String cuisineName) {
         try {
             Optional<Cuisine> cuisineObj = Optional.ofNullable(repository.findByCuisineName(cuisineName));
-            return cuisineObj.map(cuisine -> new CuisineRestModel(cuisine.getCuisineId(), cuisine.getCuisineName(), cuisine.getCuisineDescription()))
+            return cuisineObj.map(cuisine -> new CuisineRestModel(cuisine.getCuisineId(), cuisine.getCuisineName(),
+                    cuisine.getCuisineDescription(), cuisine.getCuisineType()))
                     .orElseThrow(() -> new RuntimeException("Invalid cuisine name"));
         } catch (Exception e) {
             throw new RestaurantManagementException("Exception while fetching cuisines", e);

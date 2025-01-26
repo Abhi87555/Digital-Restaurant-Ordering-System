@@ -119,6 +119,16 @@ public class OrderService {
         }
     }
 
+    public RestModel findByOrderId(Long orderId) {
+        try {
+            Optional<Order> orderOptional = orderRepository.findById(orderId);
+            return orderOptional.map(this::convertOrderToRestModel)
+                    .orElseThrow(() -> new RuntimeException("Invalid orderId"));
+        } catch (Exception e) {
+            throw new RestaurantManagementException("Exception while fetching all orders", e);
+        }
+    }
+
     public List<RestModel> getAllOrder() {
         try {
             List<Order> orderList = orderRepository.findAll();

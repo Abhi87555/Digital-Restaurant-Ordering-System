@@ -28,6 +28,9 @@ public class RestaurantService {
     @Autowired
     private PaymentService paymentService;
 
+    @Autowired
+    private TableService tableService;
+
     public Response addCuisine(CuisineRestModel request) {
         try {
             return createResponse(cuisineService.addCuisine(request));
@@ -60,6 +63,14 @@ public class RestaurantService {
         }
     }
 
+    public Response getMenu() {
+        try {
+            return createResponse(menuService.getMenu());
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
     public Response createCart(CartRestModel request) {
         try {
             return createResponse(cartService.createCart(request));
@@ -72,6 +83,14 @@ public class RestaurantService {
         try {
             request.setCartId(cartId);
             return createResponse(cartService.updateCart(request));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
+    public Response findbyCartId(Long cartId) {
+        try {
+            return createResponse(cartService.findByCartId(cartId));
         } catch (Exception e) {
             return createResponse(e);
         }
@@ -102,6 +121,14 @@ public class RestaurantService {
         }
     }
 
+    public Response findByOrderId(Long orderId) {
+        try {
+            return createResponse(orderService.findByOrderId(orderId));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
     public Response getAllOrders() {
         try {
             return createResponse(orderService.getAllOrder());
@@ -122,6 +149,22 @@ public class RestaurantService {
         try {
             request.setPaymentId(paymentId);
             return createResponse(paymentService.updatePayment(request));
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
+    public Response getAllTable(){
+        try {
+            return createResponse(tableService.getAllTable());
+        } catch (Exception e) {
+            return createResponse(e);
+        }
+    }
+
+    public Response getTableByTableNumber(String tableNumber){
+        try {
+            return createResponse(tableService.getTableByTableNumber(tableNumber));
         } catch (Exception e) {
             return createResponse(e);
         }
